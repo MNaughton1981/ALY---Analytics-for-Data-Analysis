@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Song Labs — Triads in Real Progressions</title>
+<style>
+  :root{
+    --root:#1d4ed8; --third:#c2610c; --fifth:#047857;
+    --ink:#111827; --muted:#6b7280; --line:#c9ced6; --accent:#7c3aed;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); margin:0; background:#fff; line-height:1.5;}
+  .index{max-width:900px; margin:0 auto; padding:24px 22px 8px;}
+  .index h1{margin:0 0 4px;}
+  .index p{color:#374151; margin:4px 0 14px;}
+  .index .links{display:flex; flex-wrap:wrap; gap:8px;}
+  .index .links a{display:inline-block; border:1px solid var(--line); border-radius:8px; padding:6px 12px; text-decoration:none; color:var(--ink); font-size:.9rem;}
+  .index .links a:hover{background:#f3f4f6;}
+  .toolbar{max-width:900px; margin:6px auto 0; padding:0 22px;}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; vertical-align:middle;}
+  .seg button{border:0; background:#fff; padding:6px 13px; cursor:pointer; font-size:.88rem; color:#374151;}
+  .seg button.active{background:var(--ink); color:#fff;}
+  .seg button:not(:last-child){border-right:1px solid var(--line);}
+  .seg-label{font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-right:8px;}
+
+  .note-lic{max-width:900px; margin:10px auto 0; padding:10px 14px; border:1px solid var(--line); border-left:4px solid #0891b2; background:#ecfeff; border-radius:0 8px 8px 0; font-size:.86rem; color:#334155;}
+
+  .sheet{max-width:900px; margin:0 auto; padding:26px 30px 30px; border-bottom:2px dashed #e5e7eb;}
+  .sheet h2{margin:0 0 2px; font-size:1.5rem;}
+  .sheet .key{display:inline-block; font-size:.78rem; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:#fff; background:var(--accent); border-radius:6px; padding:2px 8px; vertical-align:middle; margin-left:8px;}
+  .sheet .goal{color:#334155; font-weight:600; margin:6px 0 4px;}
+  .sheet .prog{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.95rem; background:#f6f8fa; border:1px solid var(--line); border-radius:8px; padding:8px 12px; margin:8px 0 4px; color:#111827;}
+  .sheet .prog b{color:var(--accent);}
+  .legend{display:flex; gap:14px; font-size:.82rem; align-items:center; flex-wrap:wrap; margin-bottom:10px; color:#374151;}
+  .legend .dot{display:inline-block; width:13px; height:13px; border-radius:50%; margin-right:5px; vertical-align:-2px;}
+  .diagram-row{display:flex; flex-wrap:wrap; gap:18px; margin:8px 0 12px;}
+  .diagram{border:1px solid var(--line); border-radius:10px; padding:10px 10px 6px; text-align:center; width:150px;}
+  .diagram .cap{font-weight:600; font-size:.88rem; margin-bottom:2px;}
+  .diagram .sub{font-size:.72rem; color:var(--muted); font-family:ui-monospace,Menlo,Consolas,monospace;}
+  .do{border:1px solid var(--line); border-left:4px solid var(--accent); border-radius:0 8px 8px 0; padding:10px 14px; background:#faf7ff; margin-top:6px;}
+  .do h4{margin:0 0 6px; color:var(--accent); font-size:.95rem;}
+  .do ul{margin:0; padding-left:20px;}
+  .do li{margin:3px 0; color:#374151;}
+  table{border-collapse:collapse; width:100%; font-size:.88rem; margin:6px 0;}
+  th,td{border:1px solid var(--line); padding:6px 9px; text-align:left;}
+  th{background:#f3f4f6;}
+
+  @media print{
+    .no-print{display:none !important;}
+    .sheet{page-break-after:always; border-bottom:0; padding:14px 8px; max-width:100%; margin:0;}
+    .sheet:last-child{page-break-after:auto;}
+    .do,.diagram{background:#fff !important;}
+    svg{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    @page{margin:12mm;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="index no-print">
+    <h1>Song Labs — Triads in Real Progressions</h1>
+    <p>One printable page per song. Each lab takes the triad shapes from the workbook and drops them into a real
+       progression, so the Day-3 <b>APPLY</b> session has somewhere to go. Diagrams are color-coded:
+       <span style="color:var(--root);font-weight:700">root</span>,
+       <span style="color:var(--third);font-weight:700">3rd</span>,
+       <span style="color:var(--fifth);font-weight:700">5th</span>. Low E is on the left of each box.</p>
+    <div class="links">
+      <a href="#weight">1 · The Weight</a>
+      <a href="#deadflowers">2 · Dead Flowers</a>
+      <a href="#fotd">3 · Friend of the Devil</a>
+      <a href="#mystic">4 · Into the Mystic</a>
+      <a href="#franklins">5 · Franklin's Tower</a>
+      <a href="#ripple">6 · Ripple</a>
+    </div>
+    <p style="margin-top:12px;font-size:.9rem;"><a href="index.html">&larr; Back to the workbook</a> &middot;
+       <a href="one-pagers.html">Printable one-pagers</a> &middot;
+       <a href="practice-tools.html">Practice tools</a></p>
+  </div>
+
+  <div class="toolbar no-print">
+    <span class="seg-label">Diagram labels</span>
+    <div class="seg" id="modeSeg">
+      <button data-mode="notes" class="active">Notes</button>
+      <button data-mode="intervals">Intervals</button>
+      <button data-mode="fingers">Fingers</button>
+    </div>
+  </div>
+
+  <div class="legend no-print" style="max-width:900px;margin:8px auto 0;padding:0 22px;">
+    <span><span class="dot" style="background:var(--root)"></span>Root (1)</span>
+    <span><span class="dot" style="background:var(--third)"></span>Third (3 / b3)</span>
+    <span><span class="dot" style="background:var(--fifth)"></span>Fifth (5)</span>
+    <span>&times; = muted &nbsp; &#9711; = open</span>
+  </div>
+
+  <div class="note-lic no-print">
+    <b>About these sheets.</b> They show <b>chord progressions and original triad drills only</b> — no lyrics, melodies, or
+    full arrangements. Progressions are simplified to the harmonic skeleton so you can practice voice leading; grab your own
+    licensed copy of each song for the exact chart. Chord shapes are the same triads taught in <a href="index.html">the workbook</a>,
+    voiced on the <b>D-G-B</b> string set unless noted.
+  </div>
+
+  <!-- 1 · THE WEIGHT -->
+  <section class="sheet" id="weight">
+    <h2>1 · The Weight <span class="key">Key of A</span></h2>
+    <p class="goal">Trains: major triads + your first <b>minor (iii)</b> triad in a progression — I&ndash;iii&ndash;IV, with V in the turnaround.</p>
+    <div class="prog">Verse: <b>A</b> &nbsp; <b>C#m</b> &nbsp; <b>D</b> &nbsp; <b>A</b> &nbsp;&nbsp;·&nbsp;&nbsp; Turnaround leans on <b>E</b> (V)</div>
+    <div class="diagram-row" id="s-weight"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>I</td><td>2-2-2</td><td>2nd</td><td>C#</td></tr>
+        <tr><td>C#m</td><td>iii</td><td>2-1-2</td><td>1st</td><td>C#</td></tr>
+        <tr><td>D</td><td>IV</td><td>4-2-3</td><td>1st</td><td>D</td></tr>
+        <tr><td>E</td><td>V</td><td>2-1-0</td><td>Root</td><td>B</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Loop <b>A&ndash;C#m&ndash;D&ndash;A</b> at 60 bpm. Notice A and C#m share the <b>same top note (C#)</b> — only the inside voice moves. That is the whole lesson of this song.</li>
+        <li>Say it out loud: "one &ndash; three-minor &ndash; four." Hear how the C#m darkens the middle of the phrase.</li>
+        <li>Add the E (V) as a two-beat pickup back to A. Sing the top line C#&ndash;C#&ndash;D&ndash;B.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2 · DEAD FLOWERS -->
+  <section class="sheet" id="deadflowers">
+    <h2>2 · Dead Flowers <span class="key">Key of D</span></h2>
+    <p class="goal">Trains: I&ndash;V&ndash;IV country-rock changes and crisp <b>articulation</b> — stabs, slides, and rests.</p>
+    <div class="prog">Core changes: <b>D</b> &nbsp; <b>A</b> &nbsp; <b>G</b> &nbsp; <b>D</b> &nbsp;&nbsp;(I&ndash;V&ndash;IV&ndash;I)</div>
+    <div class="diagram-row" id="s-deadflowers"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>D</td><td>I</td><td>4-2-3</td><td>1st</td><td>D</td></tr>
+        <tr><td>A</td><td>V</td><td>2-2-2</td><td>2nd</td><td>C#</td></tr>
+        <tr><td>G</td><td>IV</td><td>5-4-3</td><td>Root</td><td>D</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Play the three shapes as <b>short stabs on beats 2 &amp; 4</b>, muting between — that is the country-rock lift.</li>
+        <li>Then <b>slide into</b> each shape from one fret below. Keep the hand relaxed; let the slide do the work.</li>
+        <li>Top voice barely moves (D&ndash;C#&ndash;D). Let it ring while the lower voices get the rhythmic chop.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3 · FRIEND OF THE DEVIL -->
+  <section class="sheet" id="fotd">
+    <h2>3 · Friend of the Devil <span class="key">Key of G</span></h2>
+    <p class="goal">Trains: spotting and playing a <b>minor (ii) triad</b> among majors, and the I&ndash;IV move.</p>
+    <div class="prog">Verse: <b>G</b> &rarr; <b>C</b> (I&ndash;IV, over a descending G scale) &nbsp;·&nbsp; Bridge introduces <b>Am</b> (ii)</div>
+    <div class="diagram-row" id="s-fotd"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>G</td><td>I</td><td>5-4-3</td><td>Root</td><td>D</td></tr>
+        <tr><td>C</td><td>IV</td><td>5-5-5</td><td>2nd</td><td>E</td></tr>
+        <tr><td>Am</td><td>ii</td><td>2-2-1</td><td>2nd</td><td>C</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Loop <b>G&ndash;C</b> first (I&ndash;IV). Top voice climbs D&rarr;E — hum it before you play it.</li>
+        <li>Now drop in <b>Am</b>: flip the label toggle to <b>Intervals</b> and watch the <b>3</b> turn into <b>b3</b>. That b3 is why it sounds sad.</li>
+        <li>Compare Am to C: they share the notes C and E — only one voice changes. Find the common tones before moving.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4 · INTO THE MYSTIC -->
+  <section class="sheet" id="mystic">
+    <h2>4 · Into the Mystic <span class="key">Key of C</span></h2>
+    <p class="goal">Trains: <b>legato</b> I&ndash;V&ndash;IV changes where common tones ring across the chord move.</p>
+    <div class="prog">Core: <b>C</b> &nbsp; <b>G</b> &nbsp; <b>C</b> &nbsp;&nbsp;(I&ndash;V&ndash;I) &nbsp;·&nbsp; lift to <b>F</b> (IV) in the refrain</div>
+    <div class="diagram-row" id="s-mystic"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>C</td><td>I</td><td>5-5-5</td><td>2nd</td><td>E</td></tr>
+        <tr><td>G</td><td>V</td><td>5-4-3</td><td>Root</td><td>D</td></tr>
+        <tr><td>F</td><td>IV</td><td>7-5-6</td><td>1st</td><td>F</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Play <b>C&ndash;G</b> as smoothly as possible: hold pressure, move the shortest distance, let notes overlap (legato).</li>
+        <li>The top line C&rarr;G is E&ndash;D&ndash;E&ndash;F when you add the F — a gentle rising melody. Keep it singing on top.</li>
+        <li>Try the whole loop with clean tone and no pick attack on the top string — just let it bloom.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5 · FRANKLIN'S TOWER -->
+  <section class="sheet" id="franklins">
+    <h2>5 · Franklin's Tower <span class="key">Key of A (Mixolydian)</span></h2>
+    <p class="goal">Trains: <b>triad soloing</b> over a two-chord vamp — improvise using ONLY the current triad's tones.</p>
+    <div class="prog">Vamp: <b>A</b> &harr; <b>G</b> (I&ndash;bVII) &nbsp;·&nbsp; <b>D</b> (IV) lands the "roll away the dew" turn</div>
+    <div class="diagram-row" id="s-franklins"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>A</td><td>I</td><td>2-2-2</td><td>2nd</td><td>C#</td></tr>
+        <tr><td>G</td><td>bVII</td><td>5-4-3</td><td>Root</td><td>D</td></tr>
+        <tr><td>D</td><td>IV</td><td>4-2-3</td><td>1st</td><td>D</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Set a slow <b>A&ndash;G</b> vamp (use the metronome/backing loop in <a href="practice-tools.html">practice-tools</a>).</li>
+        <li>Over <b>A</b>, play only A&ndash;C#&ndash;E; the instant it turns to <b>G</b>, switch to G&ndash;B&ndash;D. Nothing else. This is the discipline.</li>
+        <li>Once that is automatic, connect the two shapes with a single passing note, then resolve onto <b>D</b> for the turn.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 6 · RIPPLE -->
+  <section class="sheet" id="ripple">
+    <h2>6 · Ripple <span class="key">Key of G</span></h2>
+    <p class="goal">Trains: <b>chord melody</b> / melody-on-top — this is the workbook's G&ndash;C&ndash;D drill applied to a song.</p>
+    <div class="prog">Core: <b>G</b> &nbsp; <b>C</b> &nbsp; <b>G</b> &nbsp; <b>D</b> &nbsp;&nbsp;(I&ndash;IV&ndash;I&ndash;V) &mdash; same shapes as Module 2's drill</div>
+    <div class="diagram-row" id="s-ripple"></div>
+    <table>
+      <thead><tr><th>Chord</th><th>Role</th><th>D-G-B frets</th><th>Inversion</th><th>Top note</th></tr></thead>
+      <tbody>
+        <tr><td>G</td><td>I</td><td>5-4-3</td><td>Root</td><td>D</td></tr>
+        <tr><td>C</td><td>IV</td><td>5-5-5</td><td>2nd</td><td>E</td></tr>
+        <tr><td>D</td><td>V</td><td>4-2-3</td><td>1st</td><td>D</td></tr>
+      </tbody>
+    </table>
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>You already know these grips from the workbook drill — now make the <b>top voice sing</b> (D&ndash;E&ndash;D) louder than the inner notes.</li>
+        <li>Play <b>only</b> the top line as a melody, then add the chords back underneath it.</li>
+        <li>Remember: not every melody note needs a full triad. Alternate full chords, the top two strings, and single notes.</li>
+      </ul>
+    </div>
+  </section>
+
+<script>
+/* Fretboard engine — identical to the workbook / one-pagers.
+   String columns: 0=lowE 1=A 2=D 3=G 4=B 5=high-e */
+const COLORS = {R:"#1d4ed8","3":"#c2610c","5":"#047857"};
+const STRING_NAMES = ["E","A","D","G","B","e"];
+let MODE = "notes";
+function makeVoice(col, fret, note, interval, finger, role){ return {col, fret, note, interval, finger, role}; }
+function labelFor(v){ if(MODE==="notes") return v.note; if(MODE==="intervals") return v.interval; return v.finger==null?"":String(v.finger); }
+
+function chordBoxSVG(shape){
+  const voices = shape.voices;
+  const frets = voices.map(v=>v.fret);
+  const maxF = Math.max(...frets);
+  const nz = frets.filter(f=>f>0);
+  const minNz = nz.length ? Math.min(...nz) : 0;
+  const showNut = maxF <= 4;
+  const startFret = showNut ? 0 : minNz;
+  const cols = 6, rows = 4, colW = 18, rowH = 27, oX = 30, oY = 34;
+  const gridW = (cols-1)*colW, W = oX + gridW + 18, H = oY + rows*rowH + 26;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img">`;
+  for(let r=0;r<=rows;r++){ const y=oY+r*rowH; const isNut=(r===0&&showNut);
+    svg += `<line x1="${oX}" y1="${y}" x2="${oX+gridW}" y2="${y}" stroke="#4b5563" stroke-width="${isNut?4:1}" />`; }
+  for(let c=0;c<cols;c++){ const x=oX+c*colW;
+    svg += `<line x1="${x}" y1="${oY}" x2="${x}" y2="${oY+rows*rowH}" stroke="#4b5563" stroke-width="1" />`; }
+  // starting-fret reference — always shown so every box (even open position) carries a
+  // position marker. When the nut is drawn, the first fret space is fret 1.
+  const refFret = showNut ? 1 : startFret;
+  svg += `<text x="${oX-9}" y="${oY+rowH*0.72}" font-size="11" fill="#6b7280" text-anchor="middle" font-family="ui-monospace,monospace">${refFret}</text>`;
+  const used = {}; voices.forEach(v=>used[v.col]=v);
+  for(let c=0;c<cols;c++){ const x=oX+c*colW; const v=used[c];
+    if(!v){ svg += `<text x="${x}" y="${oY-8}" font-size="12" fill="#9ca3af" text-anchor="middle">&#215;</text>`; }
+    else if(v.fret===0){ svg += `<circle cx="${x}" cy="${oY-11}" r="4.5" fill="none" stroke="#4b5563" stroke-width="1.4" />`; } }
+  voices.forEach(v=>{ if(v.fret===0) return;
+    const x=oX+v.col*colW; const sp=showNut?(v.fret-1):(v.fret-startFret); const y=oY+sp*rowH+rowH/2;
+    const col=COLORS[v.role]||"#374151";
+    svg += `<circle cx="${x}" cy="${y}" r="9" fill="${col}" />`;
+    svg += `<text x="${x}" y="${y}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${labelFor(v)}</text>`; });
+  return svg + `</svg>`;
+}
+function renderGroup(id, shapes){ const host=document.getElementById(id); if(!host) return;
+  host.innerHTML = shapes.map(s=>`<div class="diagram"><div class="cap">${s.cap}</div><div class="sub">${s.sub||""}</div>${chordBoxSVG(s)}</div>`).join(""); }
+
+/* DATA (cols: E=0 A=1 D=2 G=3 B=4 e=5) — D-G-B triad voicings, nearest-inversion neighborhoods */
+const S_WEIGHT = [
+  {cap:"A · I", sub:"D2 G2 B2 · top C#", voices:[makeVoice(2,2,"E","5",1,"5"),makeVoice(3,2,"A","R",1,"R"),makeVoice(4,2,"C#","3",1,"3")]},
+  {cap:"C#m · iii", sub:"D2 G1 B2 · top C#", voices:[makeVoice(2,2,"E","b3",2,"3"),makeVoice(3,1,"G#","5",1,"5"),makeVoice(4,2,"C#","R",3,"R")]},
+  {cap:"D · IV", sub:"D4 G2 B3 · top D", voices:[makeVoice(2,4,"F#","3",3,"3"),makeVoice(3,2,"A","5",1,"5"),makeVoice(4,3,"D","R",2,"R")]},
+  {cap:"E · V", sub:"D2 G1 B0 · top B", voices:[makeVoice(2,2,"E","R",2,"R"),makeVoice(3,1,"G#","3",1,"3"),makeVoice(4,0,"B","5",0,"5")]},
+];
+const S_DEADFLOWERS = [
+  {cap:"D · I", sub:"D4 G2 B3 · top D", voices:[makeVoice(2,4,"F#","3",3,"3"),makeVoice(3,2,"A","5",1,"5"),makeVoice(4,3,"D","R",2,"R")]},
+  {cap:"A · V", sub:"D2 G2 B2 · top C#", voices:[makeVoice(2,2,"E","5",1,"5"),makeVoice(3,2,"A","R",1,"R"),makeVoice(4,2,"C#","3",1,"3")]},
+  {cap:"G · IV", sub:"D5 G4 B3 · top D", voices:[makeVoice(2,5,"G","R",3,"R"),makeVoice(3,4,"B","3",2,"3"),makeVoice(4,3,"D","5",1,"5")]},
+];
+const S_FOTD = [
+  {cap:"G · I", sub:"D5 G4 B3 · top D", voices:[makeVoice(2,5,"G","R",3,"R"),makeVoice(3,4,"B","3",2,"3"),makeVoice(4,3,"D","5",1,"5")]},
+  {cap:"C · IV", sub:"D5 G5 B5 · top E", voices:[makeVoice(2,5,"G","5",1,"5"),makeVoice(3,5,"C","R",1,"R"),makeVoice(4,5,"E","3",1,"3")]},
+  {cap:"Am · ii", sub:"D2 G2 B1 · top C", voices:[makeVoice(2,2,"E","5",2,"5"),makeVoice(3,2,"A","R",3,"R"),makeVoice(4,1,"C","b3",1,"3")]},
+];
+const S_MYSTIC = [
+  {cap:"C · I", sub:"D5 G5 B5 · top E", voices:[makeVoice(2,5,"G","5",1,"5"),makeVoice(3,5,"C","R",1,"R"),makeVoice(4,5,"E","3",1,"3")]},
+  {cap:"G · V", sub:"D5 G4 B3 · top D", voices:[makeVoice(2,5,"G","R",3,"R"),makeVoice(3,4,"B","3",2,"3"),makeVoice(4,3,"D","5",1,"5")]},
+  {cap:"F · IV", sub:"D7 G5 B6 · top F", voices:[makeVoice(2,7,"A","3",3,"3"),makeVoice(3,5,"C","5",1,"5"),makeVoice(4,6,"F","R",2,"R")]},
+];
+const S_FRANKLINS = [
+  {cap:"A · I", sub:"D2 G2 B2 · top C#", voices:[makeVoice(2,2,"E","5",1,"5"),makeVoice(3,2,"A","R",1,"R"),makeVoice(4,2,"C#","3",1,"3")]},
+  {cap:"G · bVII", sub:"D5 G4 B3 · top D", voices:[makeVoice(2,5,"G","R",3,"R"),makeVoice(3,4,"B","3",2,"3"),makeVoice(4,3,"D","5",1,"5")]},
+  {cap:"D · IV", sub:"D4 G2 B3 · top D", voices:[makeVoice(2,4,"F#","3",3,"3"),makeVoice(3,2,"A","5",1,"5"),makeVoice(4,3,"D","R",2,"R")]},
+];
+const S_RIPPLE = [
+  {cap:"G · I", sub:"D5 G4 B3 · top D", voices:[makeVoice(2,5,"G","R",3,"R"),makeVoice(3,4,"B","3",2,"3"),makeVoice(4,3,"D","5",1,"5")]},
+  {cap:"C · IV", sub:"D5 G5 B5 · top E", voices:[makeVoice(2,5,"G","5",1,"5"),makeVoice(3,5,"C","R",1,"R"),makeVoice(4,5,"E","3",1,"3")]},
+  {cap:"D · V", sub:"D4 G2 B3 · top D", voices:[makeVoice(2,4,"F#","3",3,"3"),makeVoice(3,2,"A","5",1,"5"),makeVoice(4,3,"D","R",2,"R")]},
+];
+
+function renderAll(){
+  renderGroup("s-weight", S_WEIGHT);
+  renderGroup("s-deadflowers", S_DEADFLOWERS);
+  renderGroup("s-fotd", S_FOTD);
+  renderGroup("s-mystic", S_MYSTIC);
+  renderGroup("s-franklins", S_FRANKLINS);
+  renderGroup("s-ripple", S_RIPPLE);
+}
+document.getElementById("modeSeg").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  MODE=b.dataset.mode;
+  [...document.querySelectorAll("#modeSeg button")].forEach(x=>x.classList.toggle("active", x===b));
+  renderAll();
+});
+renderAll();
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scales Up the Neck — Broken Intervals in C Major</title>
+<style>
+  :root{
+    --root:#1d4ed8; --third:#c2610c; --fifth:#047857;
+    --lower:#1d4ed8; --upper:#c2610c;
+    --ink:#111827; --muted:#6b7280; --line:#c9ced6; --accent:#7c3aed; --panel:#f6f8fa;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); margin:0; background:#fff; line-height:1.5;}
+  .index{max-width:940px; margin:0 auto; padding:24px 22px 8px;}
+  .index h1{margin:0 0 4px;}
+  .index p{color:#374151; margin:4px 0 12px;}
+  .index .links{display:flex; flex-wrap:wrap; gap:8px;}
+  .index .links a{display:inline-block; border:1px solid var(--line); border-radius:8px; padding:6px 12px; text-decoration:none; color:var(--ink); font-size:.9rem;}
+  .index .links a:hover{background:#f3f4f6;}
+  .toolbar{max-width:940px; margin:6px auto 0; padding:0 22px;}
+  .seg{display:inline-flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; vertical-align:middle;}
+  .seg button{border:0; background:#fff; padding:6px 13px; cursor:pointer; font-size:.88rem; color:#374151;}
+  .seg button.active{background:var(--ink); color:#fff;}
+  .seg button:not(:last-child){border-right:1px solid var(--line);}
+  .seg-label{font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; margin-right:8px;}
+
+  .callout{max-width:940px; margin:12px auto 0; padding:12px 16px; border:1px solid var(--line); border-left:4px solid var(--accent); background:#faf7ff; border-radius:0 8px 8px 0;}
+  .callout.garcia{border-left-color:#c2610c; background:#fff7ed;}
+  .callout h3{margin:0 0 6px; font-size:1rem; color:var(--accent);}
+  .callout.garcia h3{color:#c2610c;}
+  .callout p{margin:6px 0;}
+
+  .sheet{max-width:940px; margin:0 auto; padding:22px 26px 26px; border-bottom:2px dashed #e5e7eb;}
+  .sheet h2{margin:0 0 2px; font-size:1.4rem;}
+  .sheet .goal{color:#334155; margin:2px 0 8px;}
+  .setblock{margin:14px 0 6px;}
+  .setblock .setname{font-weight:600; font-size:.95rem; margin:0 0 2px;}
+  .setblock .seqline{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.8rem; color:var(--muted); margin:0 0 4px;}
+  .neck{border:1px solid var(--line); border-radius:10px; padding:10px 6px 6px; margin:2px 0 8px; overflow-x:auto; background:#fff;}
+  .legend{display:flex; gap:16px; font-size:.82rem; align-items:center; flex-wrap:wrap; color:#374151; margin:6px 0;}
+  .legend .dot{display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:5px; vertical-align:-2px;}
+  .do{border:1px solid var(--line); border-left:4px solid #0891b2; border-radius:0 8px 8px 0; padding:10px 14px; background:#f0fdff; margin-top:6px;}
+  .do h4{margin:0 0 6px; color:#0369a1; font-size:.95rem;}
+  .do ul{margin:0; padding-left:20px;} .do li{margin:3px 0; color:#374151;}
+  .note{background:#f6f8fa; border-left:4px solid var(--muted); border-radius:0 8px 8px 0; padding:8px 13px; font-size:.86rem; color:#374151; margin:8px 0;}
+
+  @media print{
+    .no-print{display:none !important;}
+    .sheet{page-break-after:always; border-bottom:0; padding:12px 6px; max-width:100%;}
+    .sheet:last-child{page-break-after:auto;}
+    .neck,.do,.callout,.note{background:#fff !important;}
+    svg{-webkit-print-color-adjust:exact; print-color-adjust:exact;}
+    @page{margin:11mm;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="index no-print">
+    <h1>Scales Up the Neck — Broken Intervals in C Major</h1>
+    <p>The broken-interval studies (from your daily warm-up) are usually drawn as one boxed shape. These charts flip them onto
+       the <b>y-axis</b>: the same C-major line climbing <b>up the neck</b> on the string sets you already know your triads on.
+       Every note is labeled with its <b>name and scale degree</b> — say both out loud as you play. That recitation is the whole point:
+       it welds the geography (where the note lives) to the theory (what the note is).</p>
+    <div class="links">
+      <a href="#thirds">Broken 3rds</a>
+      <a href="#fourths">Broken 4ths</a>
+      <a href="#fifths">Broken 5ths</a>
+      <a href="#sevenths">Broken 7ths</a>
+      <a href="#octaves">Broken Octaves</a>
+      <a href="#bridge">The Bridge (1-5-&#9837;7)</a>
+    </div>
+    <p style="margin-top:12px;font-size:.9rem;"><a href="index.html">&larr; Back to the workbook</a> &middot;
+       <a href="one-pagers.html">One-pagers</a> &middot; <a href="song-labs.html">Song labs</a> &middot;
+       <a href="practice-tools.html">Practice tools</a></p>
+  </div>
+
+  <div class="toolbar no-print">
+    <span class="seg-label">Note labels</span>
+    <div class="seg" id="modeSeg">
+      <button data-mode="both" class="active">Note + Degree</button>
+      <button data-mode="notes">Notes</button>
+      <button data-mode="degrees">Degrees</button>
+    </div>
+  </div>
+
+  <div class="legend no-print" style="max-width:940px;margin:8px auto 0;padding:0 22px;">
+    <span><span class="dot" style="background:var(--lower)"></span>Lower voice (played first)</span>
+    <span><span class="dot" style="background:var(--upper)"></span>Upper voice (the interval)</span>
+    <span>Small number under a pair = play order (1&rarr;7, ascending the scale)</span>
+  </div>
+
+  <div class="callout garcia no-print">
+    <h3>Why this matters — "third-hunting"</h3>
+    <p>Jerry Garcia has been described as a <i>third-hunter</i>: as he solos through a tune, his ear reaches for the <b>3rd of the
+       next chord</b>, because the 3rd is the note that tells you major from minor and voice-leads most strongly into the change.
+       Broken 3rds up the neck are the drill that builds exactly that reflex — you learn where every 3rd lives, in every register,
+       on the string sets you comp on. Broken 4ths/5ths/7ths/octaves extend the same idea to the other target tones.</p>
+    <p>Play each line <b>slowly, ascending then descending</b>, reciting <b>note + degree</b> for every note. Then loop just the
+       upper voice as a melody. You are not memorizing a shape — you're learning to <i>see</i> the note names climb the neck.</p>
+  </div>
+
+  <!-- sections injected by script -->
+  <div id="sections"></div>
+
+  <div class="note no-print" style="max-width:940px;margin:18px auto 40px;">
+    These charts are original — generated from the C-major scale and standard tuning, not reproduced from any book. Use them
+    alongside your own copy of the daily warm-up for the notation and picking fingerings.
+  </div>
+
+<script>
+"use strict";
+/* ---- VERIFIED DATA (computed offline; cols E0 A1 D2 G3 B4 e5) ---- */
+const LINES = {
+  "3rd": {
+    "A-D-G": {lo:1,hi:2,span:[2,14],stretch:2,dots:[{fLo:3,fHi:2,nLo:"C",nHi:"E",dLo:1,dHi:3},{fLo:5,fHi:3,nLo:"D",nHi:"F",dLo:2,dHi:4},{fLo:7,fHi:5,nLo:"E",nHi:"G",dLo:3,dHi:5},{fLo:8,fHi:7,nLo:"F",nHi:"A",dLo:4,dHi:6},{fLo:10,fHi:9,nLo:"G",nHi:"B",dLo:5,dHi:7},{fLo:12,fHi:10,nLo:"A",nHi:"C",dLo:6,dHi:1},{fLo:14,fHi:12,nLo:"B",nHi:"D",dLo:7,dHi:2}]},
+    "G-B-E": {lo:3,hi:4,span:[5,16],stretch:1,dots:[{fLo:5,fHi:5,nLo:"C",nHi:"E",dLo:1,dHi:3},{fLo:7,fHi:6,nLo:"D",nHi:"F",dLo:2,dHi:4},{fLo:9,fHi:8,nLo:"E",nHi:"G",dLo:3,dHi:5},{fLo:10,fHi:10,nLo:"F",nHi:"A",dLo:4,dHi:6},{fLo:12,fHi:12,nLo:"G",nHi:"B",dLo:5,dHi:7},{fLo:14,fHi:13,nLo:"A",nHi:"C",dLo:6,dHi:1},{fLo:16,fHi:15,nLo:"B",nHi:"D",dLo:7,dHi:2}]},
+    "D-G-B (low)": {lo:2,hi:3,span:[0,12],stretch:2,dots:[{fLo:10,fHi:9,nLo:"C",nHi:"E",dLo:1,dHi:3},{fLo:12,fHi:10,nLo:"D",nHi:"F",dLo:2,dHi:4},{fLo:2,fHi:0,nLo:"E",nHi:"G",dLo:3,dHi:5,dropBefore:true},{fLo:3,fHi:2,nLo:"F",nHi:"A",dLo:4,dHi:6},{fLo:5,fHi:4,nLo:"G",nHi:"B",dLo:5,dHi:7},{fLo:7,fHi:5,nLo:"A",nHi:"C",dLo:6,dHi:1},{fLo:9,fHi:7,nLo:"B",nHi:"D",dLo:7,dHi:2}]}
+  },
+  "4th": {
+    "A-D-G": {lo:1,hi:2,span:[3,14],stretch:1,dots:[{fLo:3,fHi:3,nLo:"C",nHi:"F",dLo:1,dHi:4},{fLo:5,fHi:5,nLo:"D",nHi:"G",dLo:2,dHi:5},{fLo:7,fHi:7,nLo:"E",nHi:"A",dLo:3,dHi:6},{fLo:8,fHi:9,nLo:"F",nHi:"B",dLo:4,dHi:7},{fLo:10,fHi:10,nLo:"G",nHi:"C",dLo:5,dHi:1},{fLo:12,fHi:12,nLo:"A",nHi:"D",dLo:6,dHi:2},{fLo:14,fHi:14,nLo:"B",nHi:"E",dLo:7,dHi:3}]},
+    "G-B-E": {lo:3,hi:4,span:[5,17],stretch:2,dots:[{fLo:5,fHi:6,nLo:"C",nHi:"F",dLo:1,dHi:4},{fLo:7,fHi:8,nLo:"D",nHi:"G",dLo:2,dHi:5},{fLo:9,fHi:10,nLo:"E",nHi:"A",dLo:3,dHi:6},{fLo:10,fHi:12,nLo:"F",nHi:"B",dLo:4,dHi:7},{fLo:12,fHi:13,nLo:"G",nHi:"C",dLo:5,dHi:1},{fLo:14,fHi:15,nLo:"A",nHi:"D",dLo:6,dHi:2},{fLo:16,fHi:17,nLo:"B",nHi:"E",dLo:7,dHi:3}]},
+    "D-G-B (low)": {lo:2,hi:3,span:[2,12],stretch:2,dots:[{fLo:10,fHi:10,nLo:"C",nHi:"F",dLo:1,dHi:4},{fLo:12,fHi:12,nLo:"D",nHi:"G",dLo:2,dHi:5},{fLo:2,fHi:2,nLo:"E",nHi:"A",dLo:3,dHi:6,dropBefore:true},{fLo:3,fHi:4,nLo:"F",nHi:"B",dLo:4,dHi:7},{fLo:5,fHi:5,nLo:"G",nHi:"C",dLo:5,dHi:1},{fLo:7,fHi:7,nLo:"A",nHi:"D",dLo:6,dHi:2},{fLo:9,fHi:9,nLo:"B",nHi:"E",dLo:7,dHi:3}]}
+  },
+  "5th": {
+    "A-D-G": {lo:1,hi:2,span:[3,15],stretch:2,dots:[{fLo:3,fHi:5,nLo:"C",nHi:"G",dLo:1,dHi:5},{fLo:5,fHi:7,nLo:"D",nHi:"A",dLo:2,dHi:6},{fLo:7,fHi:9,nLo:"E",nHi:"B",dLo:3,dHi:7},{fLo:8,fHi:10,nLo:"F",nHi:"C",dLo:4,dHi:1},{fLo:10,fHi:12,nLo:"G",nHi:"D",dLo:5,dHi:2},{fLo:12,fHi:14,nLo:"A",nHi:"E",dLo:6,dHi:3},{fLo:14,fHi:15,nLo:"B",nHi:"F",dLo:7,dHi:4}]},
+    "D-G-B": {lo:2,hi:3,span:[10,22],stretch:2,dots:[{fLo:10,fHi:12,nLo:"C",nHi:"G",dLo:1,dHi:5},{fLo:12,fHi:14,nLo:"D",nHi:"A",dLo:2,dHi:6},{fLo:14,fHi:16,nLo:"E",nHi:"B",dLo:3,dHi:7},{fLo:15,fHi:17,nLo:"F",nHi:"C",dLo:4,dHi:1},{fLo:17,fHi:19,nLo:"G",nHi:"D",dLo:5,dHi:2},{fLo:19,fHi:21,nLo:"A",nHi:"E",dLo:6,dHi:3},{fLo:21,fHi:22,nLo:"B",nHi:"F",dLo:7,dHi:4}]},
+    "G-B-E": {lo:3,hi:4,span:[5,18],stretch:3,dots:[{fLo:5,fHi:8,nLo:"C",nHi:"G",dLo:1,dHi:5},{fLo:7,fHi:10,nLo:"D",nHi:"A",dLo:2,dHi:6},{fLo:9,fHi:12,nLo:"E",nHi:"B",dLo:3,dHi:7},{fLo:10,fHi:13,nLo:"F",nHi:"C",dLo:4,dHi:1},{fLo:12,fHi:15,nLo:"G",nHi:"D",dLo:5,dHi:2},{fLo:14,fHi:17,nLo:"A",nHi:"E",dLo:6,dHi:3},{fLo:16,fHi:18,nLo:"B",nHi:"F",dLo:7,dHi:4}]}
+  },
+  "7th": {
+    "A–G (skip D)": {lo:1,hi:3,span:[3,14],stretch:1,dots:[{fLo:3,fHi:4,nLo:"C",nHi:"B",dLo:1,dHi:7},{fLo:5,fHi:5,nLo:"D",nHi:"C",dLo:2,dHi:1},{fLo:7,fHi:7,nLo:"E",nHi:"D",dLo:3,dHi:2},{fLo:8,fHi:9,nLo:"F",nHi:"E",dLo:4,dHi:3},{fLo:10,fHi:10,nLo:"G",nHi:"F",dLo:5,dHi:4},{fLo:12,fHi:12,nLo:"A",nHi:"G",dLo:6,dHi:5},{fLo:14,fHi:14,nLo:"B",nHi:"A",dLo:7,dHi:6}]},
+    "G–e (skip B)": {lo:3,hi:5,span:[5,17],stretch:2,dots:[{fLo:5,fHi:7,nLo:"C",nHi:"B",dLo:1,dHi:7},{fLo:7,fHi:8,nLo:"D",nHi:"C",dLo:2,dHi:1},{fLo:9,fHi:10,nLo:"E",nHi:"D",dLo:3,dHi:2},{fLo:10,fHi:12,nLo:"F",nHi:"E",dLo:4,dHi:3},{fLo:12,fHi:13,nLo:"G",nHi:"F",dLo:5,dHi:4},{fLo:14,fHi:15,nLo:"A",nHi:"G",dLo:6,dHi:5},{fLo:16,fHi:17,nLo:"B",nHi:"A",dLo:7,dHi:6}]}
+  },
+  "octave": {
+    "A–G (skip D)": {lo:1,hi:3,span:[3,16],stretch:2,dots:[{fLo:3,fHi:5,nLo:"C",nHi:"C",dLo:1,dHi:1},{fLo:5,fHi:7,nLo:"D",nHi:"D",dLo:2,dHi:2},{fLo:7,fHi:9,nLo:"E",nHi:"E",dLo:3,dHi:3},{fLo:8,fHi:10,nLo:"F",nHi:"F",dLo:4,dHi:4},{fLo:10,fHi:12,nLo:"G",nHi:"G",dLo:5,dHi:5},{fLo:12,fHi:14,nLo:"A",nHi:"A",dLo:6,dHi:6},{fLo:14,fHi:16,nLo:"B",nHi:"B",dLo:7,dHi:7}]},
+    "G–e (skip B)": {lo:3,hi:5,span:[5,19],stretch:3,dots:[{fLo:5,fHi:8,nLo:"C",nHi:"C",dLo:1,dHi:1},{fLo:7,fHi:10,nLo:"D",nHi:"D",dLo:2,dHi:2},{fLo:9,fHi:12,nLo:"E",nHi:"E",dLo:3,dHi:3},{fLo:10,fHi:13,nLo:"F",nHi:"F",dLo:4,dHi:4},{fLo:12,fHi:15,nLo:"G",nHi:"G",dLo:5,dHi:5},{fLo:14,fHi:17,nLo:"A",nHi:"A",dLo:6,dHi:6},{fLo:16,fHi:19,nLo:"B",nHi:"B",dLo:7,dHi:7}]}
+  },
+};
+
+/* ---- BRIDGE shapes: fill the skipped string with the 5th -> 1-5-8, then drop the
+   top a whole step -> 1-5-b7 (Mixolydian). Verified offline. cols E0 A1 D2 G3 B4 e5.
+   Each shape: root(lo col), fifth(mid col), and top on the hi col at two frets
+   (oct = octave, b7 = flat seven). diat flags whether the b7 stays in C major. ---- */
+const BRIDGE = {
+  "A-D-G": {lo:1, mid:2, hi:3, span:[3,16], shapes:[
+    {deg:1,root:"C",rf:3, fifth:"G",mf:5, oct:"C",of:5, b7:"Bb",b7f:3, diat:false},
+    {deg:2,root:"D",rf:5, fifth:"A",mf:7, oct:"D",of:7, b7:"C", b7f:5, diat:true},
+    {deg:3,root:"E",rf:7, fifth:"B",mf:9, oct:"E",of:9, b7:"D", b7f:7, diat:true},
+    {deg:4,root:"F",rf:8, fifth:"C",mf:10,oct:"F",of:10,b7:"Eb",b7f:8, diat:false},
+    {deg:5,root:"G",rf:10,fifth:"D",mf:12,oct:"G",of:12,b7:"F", b7f:10,diat:true},
+    {deg:6,root:"A",rf:12,fifth:"E",mf:14,oct:"A",of:14,b7:"G", b7f:12,diat:true},
+    {deg:7,root:"B",rf:14,fifth:"F#",mf:16,oct:"B",of:16,b7:"A",b7f:14,diat:true}
+  ]},
+  "G-B-e": {lo:3, mid:4, hi:5, span:[5,19], shapes:[
+    {deg:1,root:"C",rf:5, fifth:"G",mf:8, oct:"C",of:8, b7:"Bb",b7f:6, diat:false},
+    {deg:2,root:"D",rf:7, fifth:"A",mf:10,oct:"D",of:10,b7:"C", b7f:8, diat:true},
+    {deg:3,root:"E",rf:9, fifth:"B",mf:12,oct:"E",of:12,b7:"D", b7f:10,diat:true},
+    {deg:4,root:"F",rf:10,fifth:"C",mf:13,oct:"F",of:13,b7:"Eb",b7f:11,diat:false},
+    {deg:5,root:"G",rf:12,fifth:"D",mf:15,oct:"G",of:15,b7:"F", b7f:13,diat:true},
+    {deg:6,root:"A",rf:14,fifth:"E",mf:17,oct:"A",of:17,b7:"G", b7f:15,diat:true},
+    {deg:7,root:"B",rf:16,fifth:"F#",mf:19,oct:"B",of:19,b7:"A",b7f:17,diat:true}
+  ]}
+};
+
+const STRING_NAMES = ["E","A","D","G","B","e"];  // col 0..5
+let MODE = "both";
+let TOP = "oct"; // bridge top voice: "oct" (1-5-8) or "b7" (1-5-b7, Mixolydian)
+
+/* Section metadata: title, goal, ordered set names, per-section notes */
+const SECTIONS = [
+  {id:"thirds", kind:"3rd", title:"Broken 3rds", degLabel:"3rds",
+   goal:"C–E, D–F, E–G, F–A, G–B, A–C, B–D. The third-hunter's core drill: learn where every 3rd lives, climbing the neck.",
+   sets:["A-D-G","G-B-E","D-G-B (low)"], notes:"The <b>D-G-B (low)</b> version starts on the tonic C up at fret 10, then <b>drops an octave</b> (marked <b>8vb&#8595;</b>) to finish the run in first position — so the whole scale fits under the 12th fret instead of running off the top. It's the same seven 3rds, just folded back into the low neck."},
+  {id:"fourths", kind:"4th", title:"Broken 4ths", degLabel:"4ths",
+   goal:"C–F, D–G, E–A, F–B, G–C, A–D, B–E. Fourths voice-lead into suspensions and the IV chord.",
+   sets:["A-D-G","G-B-E","D-G-B (low)"], notes:"Same idea as the 3rds: the <b>D-G-B (low)</b> line starts on C at fret 10, then <b>drops an octave</b> (<b>8vb&#8595;</b>) into first position to finish."},
+  {id:"fifths", kind:"5th", title:"Broken 5ths", degLabel:"5ths",
+   goal:"C–G, D–A, E–B, F–C, G–D, A–E, B–F. The open, hollow interval — the frame of every triad.",
+   sets:["A-D-G","G-B-E","D-G-B"], notes:"Fifths are a wider reach (up to ~3 frets). The D-G-B version lives high on the neck (frets 10–22) — it's the upper-register extension; take it slowly or skip it until the lower two sets are comfortable."},
+  {id:"sevenths", kind:"7th", title:"Broken 7ths", degLabel:"7ths",
+   goal:"C–B, D–C, E–D, F–E, G–F, A–G, B–A. Sevenths are the leading, tense color that pulls toward resolution.",
+   sets:["A–G (skip D)","G–e (skip B)"], notes:"A 7th spans too far for two neighbouring strings, so these use a <b>string-skip</b> pair (skip the middle string). Fret the lower note, reach across the skipped string for the upper."},
+  {id:"octaves", kind:"octave", title:"Broken Octaves", degLabel:"octaves",
+   goal:"C–C, D–D, E–E … the same note, an octave apart — the classic octave shape climbing the scale.",
+   sets:["A–G (skip D)","G–e (skip B)"], notes:"Octaves also use a <b>string-skip</b> pair — this is the familiar octave grip. Mute the skipped middle string with the underside of your fretting finger."},
+];
+
+/* ---- Horizontal neck renderer with a climbing labelled line ---- */
+function labelFor(note, deg){
+  if(MODE==="notes") return note;
+  if(MODE==="degrees") return String(deg);
+  return note; // "both" -> note big, degree small (drawn separately)
+}
+function neckLineSVG(line){
+  const dots = line.dots;
+  const fStart = Math.max(0, line.span[0]-1);
+  const fEnd = line.span[1]+1;
+  const nF = fEnd - fStart;
+  const fretW=34, strH=20, oX=40, oY=22;
+  const W = oX + nF*fretW + 20, H = oY + 5*strH + 40;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="${line.lo}-${line.hi} climbing line">`;
+
+  // inlay dots
+  [3,5,7,9,15,17,19,21].forEach(f=>{ if(f>=fStart&&f<=fEnd){ const x=oX+(f-0.5-fStart)*fretW; svg+=`<circle cx="${x}" cy="${oY+2.5*strH}" r="3.5" fill="#e5e7eb"/>`; } });
+  if(12>=fStart&&12<=fEnd){ const x=oX+(12-0.5-fStart)*fretW; svg+=`<circle cx="${x}" cy="${oY+1.5*strH}" r="3.5" fill="#e5e7eb"/><circle cx="${x}" cy="${oY+3.5*strH}" r="3.5" fill="#e5e7eb"/>`; }
+
+  // strings (col0 low E at bottom -> y for col c is (5-c))
+  for(let c=0;c<6;c++){ const y=oY+(5-c)*strH;
+    svg+=`<line x1="${oX}" y1="${y}" x2="${oX+nF*fretW}" y2="${y}" stroke="#9aa1ab" stroke-width="1"/>`;
+    svg+=`<text x="${oX-12}" y="${y+3.5}" font-size="10" fill="#9ca3af" text-anchor="middle" font-family="ui-monospace,monospace">${STRING_NAMES[c]}</text>`; }
+  // frets
+  for(let f=fStart; f<=fEnd; f++){ const x=oX+(f-fStart)*fretW;
+    svg+=`<line x1="${x}" y1="${oY}" x2="${x}" y2="${oY+5*strH}" stroke="#c9ced6" stroke-width="${f===0?3:1}"/>`;
+    if(f>0) svg+=`<text x="${x-fretW/2}" y="${oY+5*strH+16}" font-size="10" fill="#9ca3af" text-anchor="middle" font-family="ui-monospace,monospace">${f}</text>`; }
+
+  const yFor=(col)=>oY+(5-col)*strH;
+  const xFor=(fret)=> fret===0 ? oX-8 : oX+(fret-0.5-fStart)*fretW;
+
+  // connector lines between the two voices of each pair, and the melodic path between pairs
+  // path along lower voice (order of play). Skip the segment across an octave drop.
+  for(let i=1;i<dots.length;i++){
+    const a=dots[i-1], b=dots[i];
+    if(b.dropBefore){
+      // mark the octave drop instead of drawing a misleading connector
+      svg+=`<text x="${xFor(b.fLo)}" y="${oY-8}" font-size="9" font-weight="700" fill="#7c3aed" text-anchor="middle">8vb&#8595;</text>`;
+      continue;
+    }
+    svg+=`<line x1="${xFor(a.fLo)}" y1="${yFor(line.lo)}" x2="${xFor(b.fLo)}" y2="${yFor(line.lo)}" stroke="#c7d2fe" stroke-width="2" stroke-dasharray="2 3"/>`;
+  }
+  // draw each pair
+  dots.forEach((d,i)=>{
+    const xl=xFor(d.fLo), yl=yFor(line.lo), xu=xFor(d.fHi), yu=yFor(line.hi);
+    // vertical-ish connector for the interval
+    svg+=`<line x1="${xl}" y1="${yl}" x2="${xu}" y2="${yu}" stroke="#d1d5db" stroke-width="1.5"/>`;
+    // lower voice
+    svg+=dot(xl,yl,"var(--lower)",d.nLo,d.dLo);
+    // upper voice
+    svg+=dot(xu,yu,"var(--upper)",d.nHi,d.dHi);
+    // play-order number under the pair (below the neck)
+    const xm=(xl+xu)/2;
+    svg+=`<text x="${xm}" y="${oY+5*strH+30}" font-size="10" font-weight="700" fill="#7c3aed" text-anchor="middle">${i+1}</text>`;
+  });
+  svg+=`</svg>`;
+  return svg;
+}
+function dot(x,y,color,note,deg){
+  let s=`<circle cx="${x}" cy="${y}" r="10" fill="${color}"/>`;
+  if(MODE==="both"){
+    s+=`<text x="${x}" y="${y-1}" font-size="9" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${note}</text>`;
+    s+=`<text x="${x}" y="${y+6}" font-size="6.5" fill="#fff" text-anchor="middle" dominant-baseline="central" opacity="0.9">${deg}</text>`;
+  } else {
+    s+=`<text x="${x}" y="${y}" font-size="10" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="central">${MODE==="degrees"?deg:note}</text>`;
+  }
+  return s;
+}
+
+function seqText(line){
+  return line.dots.map(d=>`${d.nLo}${sub(d.dLo)}\u2013${d.nHi}${sub(d.dHi)}`).join("  ");
+}
+function sub(n){ return "("+n+")"; }
+
+/* ---- Bridge renderer: 3-note shapes (root / 5th / top) climbing up the neck.
+   TOP="oct" draws 1-5-8; TOP="b7" draws 1-5-b7 (Mixolydian). ---- */
+function bridgeSVG(set){
+  const shapes=set.shapes;
+  const useB7 = (TOP==="b7");
+  const topFrets = shapes.map(s=> useB7 ? s.b7f : s.of);
+  const allFrets = shapes.flatMap(s=>[s.rf,s.mf]).concat(topFrets);
+  const fStart=Math.max(0, Math.min(...allFrets)-1);
+  const fEnd=Math.max(...allFrets)+1;
+  const nF=fEnd-fStart;
+  const fretW=34, strH=20, oX=40, oY=22;
+  const W=oX+nF*fretW+20, H=oY+5*strH+42;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="bridge ${set.lo}-${set.hi}">`;
+  [3,5,7,9,15,17,19,21].forEach(f=>{ if(f>=fStart&&f<=fEnd){ const x=oX+(f-0.5-fStart)*fretW; svg+=`<circle cx="${x}" cy="${oY+2.5*strH}" r="3.5" fill="#e5e7eb"/>`; } });
+  if(12>=fStart&&12<=fEnd){ const x=oX+(12-0.5-fStart)*fretW; svg+=`<circle cx="${x}" cy="${oY+1.5*strH}" r="3.5" fill="#e5e7eb"/><circle cx="${x}" cy="${oY+3.5*strH}" r="3.5" fill="#e5e7eb"/>`; }
+  for(let c=0;c<6;c++){ const y=oY+(5-c)*strH;
+    svg+=`<line x1="${oX}" y1="${y}" x2="${oX+nF*fretW}" y2="${y}" stroke="#9aa1ab" stroke-width="1"/>`;
+    svg+=`<text x="${oX-12}" y="${y+3.5}" font-size="10" fill="#9ca3af" text-anchor="middle" font-family="ui-monospace,monospace">${STRING_NAMES[c]}</text>`; }
+  for(let f=fStart; f<=fEnd; f++){ const x=oX+(f-fStart)*fretW;
+    svg+=`<line x1="${x}" y1="${oY}" x2="${x}" y2="${oY+5*strH}" stroke="#c9ced6" stroke-width="${f===0?3:1}"/>`;
+    if(f>0) svg+=`<text x="${x-fretW/2}" y="${oY+5*strH+16}" font-size="10" fill="#9ca3af" text-anchor="middle" font-family="ui-monospace,monospace">${f}</text>`; }
+  const yFor=(col)=>oY+(5-col)*strH;
+  const xFor=(fret)=> fret===0 ? oX-8 : oX+(fret-0.5-fStart)*fretW;
+  shapes.forEach((s,i)=>{
+    const tf = useB7 ? s.b7f : s.of;
+    const tn = useB7 ? s.b7 : s.oct;
+    const td = useB7 ? "b7" : "8";
+    const xr=xFor(s.rf), yr=yFor(set.lo), xm=xFor(s.mf), ym=yFor(set.mid), xt=xFor(tf), yt=yFor(set.hi);
+    // stack connectors root->5th->top
+    svg+=`<line x1="${xr}" y1="${yr}" x2="${xm}" y2="${ym}" stroke="#d1d5db" stroke-width="1.5"/>`;
+    svg+=`<line x1="${xm}" y1="${ym}" x2="${xt}" y2="${yt}" stroke="#d1d5db" stroke-width="1.5"/>`;
+    svg+=dot(xr,yr,"var(--lower)",s.root,1);
+    svg+=dot(xm,ym,"var(--fifth)",s.fifth,5);
+    // top voice: b7 gets a red ring when it's a borrowed (non-diatonic) note
+    const topColor = useB7 ? (s.diat ? "#7c3aed" : "#b91c1c") : "var(--upper)";
+    svg+=dot(xt,yt,topColor,tn,td);
+    // degree number under the shape
+    svg+=`<text x="${xm}" y="${oY+5*strH+30}" font-size="10" font-weight="700" fill="#7c3aed" text-anchor="middle">${s.deg}</text>`;
+  });
+  svg+=`</svg>`;
+  return svg;
+}
+function bridgeSeqText(set){
+  const useB7=(TOP==="b7");
+  return set.shapes.map(s=> useB7
+    ? `${s.root}(1)\u2013${s.fifth}(5)\u2013${s.b7}(b7)${s.diat?"":"*"}`
+    : `${s.root}(1)\u2013${s.fifth}(5)\u2013${s.oct}(8)`).join("  ");
+}
+
+function bridgeSection(){
+  const blocks = Object.keys(BRIDGE).map(setName=>{
+    const set=BRIDGE[setName];
+    return `<div class="setblock">
+      <div class="setname">On ${setName} &nbsp;<span style="color:var(--muted);font-weight:400;font-size:.85rem;">skip the middle string; the 5th fills it</span></div>
+      <div class="seqline">${bridgeSeqText(set)}</div>
+      <div class="neck">${bridgeSVG(set)}</div>
+    </div>`;
+  }).join("");
+  return `<section class="sheet" id="bridge">
+    <h2>The Bridge — filling the skipped string <span style="font-size:.85rem;color:var(--muted);font-weight:400;">1&ndash;5&ndash;8 &rarr; 1&ndash;5&ndash;&#9837;7</span></h2>
+    <p class="goal">The octave and 7th studies skip the middle string. Fill it with the <b>5th</b> and you get a compact three-string
+       shape: <b>1&ndash;5&ndash;8</b> (root, fifth, octave). Then lower the top note a whole step and it becomes <b>1&ndash;5&ndash;&#9837;7</b> — a
+       dominant-7 shell that puts you in <b>Mixolydian</b>.</p>
+    <div class="note"><b>The geography trick:</b> the <b>&#9837;7 sits exactly two frets below the octave</b>, on the same top string. Find any
+       octave shape and you can see its &#9837;7 instantly. On the <b>G</b> root, <b>1&ndash;5&ndash;&#9837;7 = G&ndash;D&ndash;F</b>, and every note is still
+       in C major — that's the key's built-in dominant (G7) pulling home to C. On the <b>C</b> root it's <b>C&ndash;G&ndash;B&#9837;</b>, a borrowed,
+       bluesy color (the B&#9837; is the Mixolydian note). Borrowed &#9837;7s are ringed <span style="color:#b91c1c;font-weight:700">red</span> below.</p>
+    <div class="row-toggle no-print" style="margin:8px 0;">
+      <span class="seg-label">Top voice</span>
+      <div class="seg" id="topSeg" style="display:inline-flex;">
+        <button data-top="oct" class="${TOP==="oct"?"active":""}">Octave (1-5-8)</button>
+        <button data-top="b7" class="${TOP==="b7"?"active":""}">Flat 7 (1-5-&#9837;7)</button>
+      </div>
+    </div>
+    ${blocks}
+    <div class="do">
+      <h4>Do this</h4>
+      <ul>
+        <li>Play the <b>1&ndash;5&ndash;8</b> shape up the scale, reciting <b>root &ndash; five &ndash; octave</b>. The middle string (the 5th) is the note that bridges the skip.</li>
+        <li>Flip to <b>Flat 7</b>: the top drops two frets. Recite <b>root &ndash; five &ndash; flat-seven</b>. Hear it turn bluesy / dominant.</li>
+        <li>Land on the <b>G</b> shape (G&ndash;D&ndash;F) and resolve it to a C chord — that's V&ndash;I, the strongest pull in the key.</li>
+      </ul>
+    </div>
+  </section>`;
+}
+
+function render(){
+  const host=document.getElementById("sections");
+  host.innerHTML = SECTIONS.map(sec=>{
+    const blocks = sec.sets.map(setName=>{
+      const line = LINES[sec.kind][setName];
+      if(!line) return "";
+      return `<div class="setblock">
+        <div class="setname">On ${setName} &nbsp;<span style="color:var(--muted);font-weight:400;font-size:.85rem;">frets ${line.span[0]}\u2013${line.span[1]}</span></div>
+        <div class="seqline">${seqText(line)}</div>
+        <div class="neck">${neckLineSVG(line)}</div>
+      </div>`;
+    }).join("");
+    const noteHtml = sec.notes ? `<div class="note">${sec.notes}</div>` : "";
+    return `<section class="sheet" id="${sec.id}">
+      <h2>${sec.title} <span style="font-size:.85rem;color:var(--muted);font-weight:400;">C major, up the neck</span></h2>
+      <p class="goal">${sec.goal}</p>
+      ${noteHtml}
+      ${blocks}
+      <div class="do">
+        <h4>Do this</h4>
+        <ul>
+          <li>Ascend the line slowly, <b>reciting note + degree</b> for every note (e.g. "C&nbsp;one, E&nbsp;three…"). Then descend.</li>
+          <li>Play only the <b>upper voice</b> as a melody, then only the <b>lower</b>. Hear how each interval colours the scale.</li>
+          <li>Loop the two sets back-to-back to feel the <b>same ${sec.degLabel}</b> in two registers — the box dissolving.</li>
+        </ul>
+      </div>
+    </section>`;
+  }).join("") + bridgeSection();
+}
+
+document.getElementById("modeSeg").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  MODE=b.dataset.mode;
+  [...document.querySelectorAll("#modeSeg button")].forEach(x=>x.classList.toggle("active", x===b));
+  render();
+});
+// Top-voice toggle lives inside the injected bridge section, so delegate from #sections.
+document.getElementById("sections").addEventListener("click", e=>{
+  const b=e.target.closest("#topSeg button"); if(!b) return;
+  TOP=b.dataset.top;
+  render();
+});
+render();
+</script>
+</body>
+</html>

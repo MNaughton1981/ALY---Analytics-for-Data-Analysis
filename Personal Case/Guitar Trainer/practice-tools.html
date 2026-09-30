@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Tools — Metronome, Backing Tracks &amp; Ear Training</title>
+<style>
+  :root{
+    --root:#1d4ed8; --third:#c2610c; --fifth:#047857;
+    --ink:#111827; --muted:#6b7280; --line:#c9ced6; --accent:#7c3aed; --panel:#f6f8fa;
+    --good:#047857; --bad:#b91c1c;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; color:var(--ink); margin:0; background:#fff; line-height:1.5;}
+  .wrap{max-width:900px; margin:0 auto; padding:26px 22px 80px;}
+  header.cover{background:#eef2f7; color:#0f172a; border:1px solid var(--line); border-left:6px solid var(--accent); border-radius:14px; padding:24px 28px; margin-bottom:22px;}
+  header.cover h1{margin:0 0 4px; font-size:1.9rem;}
+  header.cover p{margin:3px 0; color:#334155;}
+  a{color:var(--root);}
+  h2{font-size:1.3rem; margin:30px 0 6px;}
+  .card{border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:14px 0; background:#fff;}
+  .card h2{margin-top:0;}
+  .sub{color:var(--muted); font-size:.9rem; margin:0 0 14px;}
+  .row{display:flex; flex-wrap:wrap; gap:16px 26px; align-items:center;}
+  .ctl{display:flex; flex-direction:column; gap:4px;}
+  .ctl label{font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600;}
+  select, input[type=number]{padding:7px 9px; border:1px solid var(--line); border-radius:8px; font-size:.95rem; background:#fff;}
+  input[type=range]{width:180px;}
+  .btn{border:0; border-radius:10px; padding:11px 20px; font-size:1rem; font-weight:600; cursor:pointer; background:var(--ink); color:#fff;}
+  .btn:hover{opacity:.92;}
+  .btn.play{background:var(--good);}
+  .btn.stop{background:var(--bad);}
+  .btn.ghost{background:#fff; color:var(--ink); border:1px solid var(--line);}
+  .btn.big{font-size:1.05rem; padding:12px 26px;}
+  .toggle-btns{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; flex-wrap:wrap;}
+  .toggle-btns button{border:0; background:#fff; padding:8px 13px; cursor:pointer; font-size:.9rem; color:#374151;}
+  .toggle-btns button.active{background:var(--ink); color:#fff;}
+  .toggle-btns button:not(:last-child){border-right:1px solid var(--line);}
+  .bpm-readout{font-size:2rem; font-weight:700; font-variant-numeric:tabular-nums; min-width:2.6ch; text-align:center;}
+  .beatlights{display:flex; gap:8px; margin-top:6px;}
+  .beatlights .b{width:20px; height:20px; border-radius:50%; background:#e5e7eb; border:1px solid var(--line); transition:background .05s;}
+  .beatlights .b.on{background:var(--accent);}
+  .beatlights .b.accent.on{background:#dc2626;}
+  .switch{display:inline-flex; align-items:center; gap:8px; font-size:.95rem; cursor:pointer;}
+  .nowplaying{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:1.15rem; font-weight:700; letter-spacing:1px;}
+  .chordstrip{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;}
+  .chordstrip .c{padding:6px 12px; border:1px solid var(--line); border-radius:8px; font-weight:600; background:var(--panel);}
+  .chordstrip .c.current{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .ear .prompt{font-size:1rem; margin:10px 0;}
+  .ear .choices{display:flex; gap:10px; flex-wrap:wrap; margin:10px 0;}
+  .ear .choices button{border:1px solid var(--line); background:#fff; border-radius:10px; padding:12px 22px; font-size:1rem; font-weight:600; cursor:pointer;}
+  .ear .choices button:hover{background:#f3f4f6;}
+  .ear .fb{font-weight:700; min-height:1.4em;}
+  .ear .fb.good{color:var(--good);} .ear .fb.bad{color:var(--bad);}
+  .score{font-size:.95rem; color:#374151;}
+  .note{background:#ecfeff; border-left:4px solid #0891b2; border-radius:0 8px 8px 0; padding:10px 14px; margin:12px 0; font-size:.92rem;}
+  footer{margin-top:40px; color:var(--muted); font-size:.85rem; border-top:1px solid var(--line); padding-top:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="cover">
+    <h1>Practice Tools</h1>
+    <p>Metronome, a simple drum groove, chord + bass backing tracks, and a quick ear-training drill — all in the browser, no downloads.</p>
+    <p style="font-size:.9rem;"><a href="index.html">&laquo; Back to the visual workbook</a> &nbsp;·&nbsp; <a href="one-pagers.html">Printable one-pagers</a></p>
+  </header>
+
+  <div class="note">
+    <b>Tap Play to start audio.</b> Browsers only allow sound after you click, so nothing plays until you press a Play button.
+    Start slow — the metronome and backing track share the same tempo. <b>Drums stay off until you pick</b> Bass drum,
+    Backbeat, or + Hats. The bass drum and bass note are deep — they'll sound fullest on headphones or larger speakers,
+    but now carry an audible attack so you can still feel the pulse on laptop speakers.
+  </div>
+
+  <!-- ============ TRANSPORT / METRONOME / GROOVE ============ -->
+  <div class="card">
+    <h2>Metronome &amp; Groove</h2>
+    <p class="sub">Your timekeeper. Add a bass-drum pulse or a full backbeat when you want to feel the groove.</p>
+    <div class="row">
+      <button id="playBtn" class="btn play big">Play</button>
+      <div class="ctl">
+        <label>Tempo (BPM)</label>
+        <div class="row" style="gap:10px;">
+          <input type="range" id="bpm" min="40" max="160" value="60">
+          <span class="bpm-readout" id="bpmOut">60</span>
+        </div>
+      </div>
+      <div class="ctl">
+        <label>Beats / bar</label>
+        <select id="beats">
+          <option value="4" selected>4</option>
+          <option value="3">3</option>
+          <option value="2">2</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+    </div>
+    <div class="beatlights" id="beatlights"></div>
+
+    <div class="row" style="margin-top:16px;">
+      <label class="switch"><input type="checkbox" id="metOn" checked> Metronome click</label>
+      <div class="ctl">
+        <label>Drums</label>
+        <div class="toggle-btns" id="grooveSel">
+          <button data-g="off" class="active">Off</button>
+          <button data-g="kick">Bass drum</button>
+          <button data-g="backbeat">Backbeat</button>
+          <button data-g="hats">+ Hats</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ BACKING TRACK ============ -->
+  <div class="card">
+    <h2>Chord + Bass Backing Track</h2>
+    <p class="sub">Loops a chord progression with a bass note so you can practice triads in context. Uses the same Play button and tempo above.</p>
+    <div class="row">
+      <div class="ctl" style="min-width:260px;">
+        <label>Progression</label>
+        <select id="prog">
+          <optgroup label="Course drills">
+            <option value="week1" selected>Week 1 · G – C – D – C  (your D-G-B drill)</option>
+            <option value="IVV_C">Major I–IV–V in C · C – F – G</option>
+            <option value="IVV_G">Major I–IV–V in G · G – C – D</option>
+            <option value="min_iiv">Minor i–iv–v in A · Am – Dm – Em</option>
+            <option value="min_iivV">Minor i–iv–V in A · Am – Dm – E</option>
+          </optgroup>
+          <optgroup label="Common pop progressions (pairs with Progressions: Classics)">
+            <option value="pop_IVviIV">I–V–vi–IV in C · C – G – Am – F</option>
+            <option value="pop_viIVIV">vi–IV–I–V in C · Am – F – C – G</option>
+            <option value="pop_IviIVV">I–vi–IV–V in C · C – Am – F – G</option>
+            <option value="pop_IIVviV">I–IV–vi–V in C · C – F – Am – G</option>
+          </optgroup>
+          <optgroup label="One-chord vamps (for soloing)">
+            <option value="vamp_C">One-chord vamp · C major</option>
+            <option value="vamp_Am">One-chord vamp · A minor</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="ctl">
+        <label>Bars per chord</label>
+        <select id="barsPer"><option value="1" selected>1</option><option value="2">2</option></select>
+      </div>
+      <label class="switch"><input type="checkbox" id="chordsOn" checked> Chords</label>
+      <label class="switch"><input type="checkbox" id="bassOn" checked> Bass</label>
+    </div>
+    <div class="nowplaying" style="margin-top:12px;">Now playing: <span id="nowChord">—</span></div>
+    <div class="chordstrip" id="chordStrip"></div>
+    <div class="note" style="background:#faf7ff;border-color:var(--accent);">
+      <b>How to use it:</b> pick <i>Week 1</i>, set 60 BPM, turn on Bass drum, and comp your C major inversions on D-G-B.
+      Then try playing only the top note of each chord as a melody.<br>
+      <b>Later:</b> the <i>Common pop progressions</i> loop bare triads over the same patterns you'll find in
+      <i>Progressions: Classics</i> — practice them with plain inversions here first, then open the book for fuller voicings of the same progression.
+    </div>
+  </div>
+
+  <!-- ============ EAR TRAINING ============ -->
+  <div class="card ear">
+    <h2>Ear Training — Major or Minor?</h2>
+    <p class="sub">A little, often. Hear a triad, decide its quality. This trains the exact skill behind the whole course.</p>
+    <div class="row">
+      <button id="earPlay" class="btn big">Play a chord</button>
+      <button id="earReplay" class="btn ghost">Replay</button>
+      <label class="switch"><input type="checkbox" id="earHard"> Include diminished &amp; augmented</label>
+      <label class="switch"><input type="checkbox" id="earArp" checked> Arpeggiate first</label>
+    </div>
+    <div class="prompt" id="earPrompt">Press <b>Play a chord</b> to begin.</div>
+    <div class="choices" id="earChoices" style="display:none;"></div>
+    <div class="fb" id="earFb">&nbsp;</div>
+    <div class="score" id="earScore">Streak: 0 &nbsp;·&nbsp; Correct: 0 / 0</div>
+    <div class="note">
+      <b>Micro-habit:</b> 2 minutes is plenty. Even better — before you play a chord in your session, guess how it will sound, then check yourself.
+    </div>
+  </div>
+
+  <footer>
+    Practice Tools for the Triads course. All sounds are generated live in your browser (Web Audio) — no files, no tracking.
+    Chord progressions used here are common practice patterns, not transcriptions from any book.
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   Audio core — AudioContext is created only on first Play
+   (browsers require a user gesture), so this file loads clean.
+   ============================================================ */
+let AC = null;
+function ac(){
+  if(!AC){ const Ctx = window.AudioContext || window.webkitAudioContext; AC = new Ctx(); }
+  if(AC.state === "suspended") AC.resume();
+  return AC;
+}
+let master = null;
+function masterGain(){ if(!master){ master = ac().createGain(); master.gain.value = 0.9; master.connect(ac().destination); } return master; }
+
+// white-noise buffer for drums
+let NOISE = null;
+function noiseBuf(){
+  if(NOISE) return NOISE;
+  const c = ac(); const b = c.createBuffer(1, c.sampleRate*0.5, c.sampleRate);
+  const d = b.getChannelData(0);
+  for(let i=0;i<d.length;i++) d[i] = Math.random()*2 - 1;
+  NOISE = b; return NOISE;
+}
+
+// note helpers
+const SEMI = {C:0,"C#":1,Db:1,D:2,"D#":3,Eb:3,E:4,F:5,"F#":6,Gb:6,G:7,"G#":8,Ab:8,A:9,"A#":10,Bb:10,B:11};
+function midi(name, octave){ return (octave+1)*12 + SEMI[name]; }
+function freq(m){ return 440 * Math.pow(2, (m-69)/12); }
+const QUALITY = { major:[0,4,7], minor:[0,3,7], dim:[0,3,6], aug:[0,4,8] };
+
+function triadFreqs(rootName, quality, octave){
+  const base = midi(rootName, octave);
+  return QUALITY[quality].map(iv => freq(base+iv));
+}
+
+/* ---- voices ---- */
+function envGain(peak, t, attack, decay){
+  const g = ac().createGain();
+  g.gain.setValueAtTime(0, t);
+  g.gain.linearRampToValueAtTime(peak, t+attack);
+  g.gain.exponentialRampToValueAtTime(0.0008, t+attack+decay);
+  return g;
+}
+function kick(t){
+  const c=ac();
+  // low "boom" body
+  const o=c.createOscillator(); const g=c.createGain();
+  o.type="sine"; o.frequency.setValueAtTime(160,t); o.frequency.exponentialRampToValueAtTime(50,t+0.12);
+  g.gain.setValueAtTime(0.9,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+  o.connect(g).connect(masterGain()); o.start(t); o.stop(t+0.2);
+  // short "beater" click — a mid-frequency transient so the pulse is audible on
+  // laptop/phone speakers that can't reproduce the sub-bass body.
+  const s=c.createBufferSource(); s.buffer=noiseBuf();
+  const bp=c.createBiquadFilter(); bp.type="bandpass"; bp.frequency.value=2000; bp.Q.value=0.7;
+  const cg=c.createGain(); cg.gain.setValueAtTime(0.7,t); cg.gain.exponentialRampToValueAtTime(0.001,t+0.035);
+  s.connect(bp).connect(cg).connect(masterGain()); s.start(t); s.stop(t+0.05);
+}
+function snare(t){
+  const c=ac(); const s=c.createBufferSource(); s.buffer=noiseBuf();
+  const hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=1200;
+  const g=c.createGain(); g.gain.setValueAtTime(0.5,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.14);
+  s.connect(hp).connect(g).connect(masterGain()); s.start(t); s.stop(t+0.16);
+}
+function hat(t){
+  const c=ac(); const s=c.createBufferSource(); s.buffer=noiseBuf();
+  const hp=c.createBiquadFilter(); hp.type="highpass"; hp.frequency.value=8000;
+  const g=c.createGain(); g.gain.setValueAtTime(0.22,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.04);
+  s.connect(hp).connect(g).connect(masterGain()); s.start(t); s.stop(t+0.05);
+}
+function click(t, accent){
+  const c=ac(); const o=c.createOscillator(); const g=c.createGain();
+  o.type="square"; o.frequency.value = accent ? 1500 : 1000;
+  g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(accent?0.5:0.32,t+0.001);
+  g.gain.exponentialRampToValueAtTime(0.0005,t+0.05);
+  o.connect(g).connect(masterGain()); o.start(t); o.stop(t+0.06);
+}
+// sustained-ish voices we may need to cut on Stop
+let activeVoices = [];
+function bassNote(t, f, dur){
+  const c=ac();
+  const g=c.createGain();
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.5,t+0.02);
+  g.gain.setTargetAtTime(0.0001, t+Math.max(0.15,dur*0.7), 0.12);
+  g.connect(masterGain());
+  // deep fundamental (triangle) — the true pitch, for headphones / decent speakers
+  const o1=c.createOscillator(); o1.type="triangle"; o1.frequency.value=f;
+  o1.connect(g); o1.start(t); o1.stop(t+dur+0.3);
+  // octave-up partial (sawtooth) — adds harmonics an octave higher so the bass line is
+  // audible on small speakers that roll off below ~150 Hz.
+  const o2=c.createOscillator(); const g2=c.createGain(); g2.gain.value=0.45;
+  o2.type="sawtooth"; o2.frequency.value=f*2;
+  o2.connect(g2).connect(g); o2.start(t); o2.stop(t+dur+0.3);
+  activeVoices.push({o:[o1,o2], g, end:t+dur+0.3});
+}
+function chordStab(t, freqs, dur){
+  const c=ac();
+  const lp=c.createBiquadFilter(); lp.type="lowpass"; lp.frequency.value=2600;
+  const g=c.createGain();
+  g.gain.setValueAtTime(0.0001,t); g.gain.linearRampToValueAtTime(0.16,t+0.015);
+  g.gain.setTargetAtTime(0.0001, t+Math.min(0.9,dur*0.6), 0.18);
+  lp.connect(g).connect(masterGain());
+  const oscs = freqs.map(f=>{ const o=c.createOscillator(); o.type="sawtooth"; o.frequency.value=f; o.connect(lp); o.start(t); o.stop(t+dur+0.3); return o; });
+  activeVoices.push({o:oscs, g, end:t+dur+0.3});
+}
+function stopAllVoices(){
+  const now = ac().currentTime;
+  activeVoices.forEach(v=>{ try{ v.g.gain.cancelScheduledValues(now); v.g.gain.setTargetAtTime(0.0001, now, 0.05);
+    const list = Array.isArray(v.o)?v.o:[v.o]; list.forEach(o=>{ try{o.stop(now+0.1);}catch(e){} }); }catch(e){} });
+  activeVoices = [];
+}
+
+/* ============================================================
+   Progressions  (common practice patterns; root + quality)
+   ============================================================ */
+const PROGS = {
+  week1:   [["G","major"],["C","major"],["D","major"],["C","major"]],
+  IVV_C:   [["C","major"],["F","major"],["G","major"]],
+  IVV_G:   [["G","major"],["C","major"],["D","major"]],
+  min_iiv: [["A","minor"],["D","minor"],["E","minor"]],
+  min_iivV:[["A","minor"],["D","minor"],["E","major"]],
+  // common pop patterns (scale-degree number patterns, in C major)
+  pop_IVviIV: [["C","major"],["G","major"],["A","minor"],["F","major"]], // I–V–vi–IV
+  pop_viIVIV: [["A","minor"],["F","major"],["C","major"],["G","major"]], // vi–IV–I–V
+  pop_IviIVV: [["C","major"],["A","minor"],["F","major"],["G","major"]], // I–vi–IV–V
+  pop_IIVviV: [["C","major"],["F","major"],["A","minor"],["G","major"]], // I–IV–vi–V
+  vamp_C:  [["C","major"]],
+  vamp_Am: [["A","minor"]],
+};
+function chordLabel(ch){ return ch[0] + (ch[1]==="minor"?"m":ch[1]==="dim"?"°":ch[1]==="aug"?"+":""); }
+
+/* ============================================================
+   Scheduler (lookahead)
+   ============================================================ */
+let isPlaying=false, timerID=null;
+let step=0, bar=0, nextNoteTime=0;
+const LOOKAHEAD=25, SCHEDULE_AHEAD=0.12;
+let groove="off";
+
+function currentBpm(){ return parseInt(document.getElementById("bpm").value,10); }
+function beatsPerBar(){ return parseInt(document.getElementById("beats").value,10); }
+
+function scheduleStep(stepIndex, barIndex, time){
+  const bpb = beatsPerBar();
+  const isBeat = stepIndex % 4 === 0;
+  const beat = stepIndex/4;
+
+  // metronome
+  if(document.getElementById("metOn").checked && isBeat){ click(time, beat===0); }
+
+  // beat light
+  if(isBeat){ flashBeat(beat, bpb); }
+
+  // drums
+  if(groove!=="off"){
+    if(isBeat && (beat===0 || beat===2 || (bpb===3 && beat===0) )){ /* kick placement below */ }
+    // kick on beats 1 and 3 (and beat 0 always)
+    if(isBeat && (beat % 2 === 0)) kick(time);
+    if(groove==="backbeat" || groove==="hats"){
+      if(isBeat && (beat % 2 === 1)) snare(time);   // backbeat 2 & 4
+    }
+    if(groove==="hats"){
+      if(stepIndex % 2 === 0) hat(time);            // eighth-note hats
+    }
+  }
+
+  // backing track — on the downbeat of each bar
+  if(stepIndex===0){
+    const progKey = document.getElementById("prog").value;
+    const prog = PROGS[progKey];
+    const barsPer = parseInt(document.getElementById("barsPer").value,10);
+    const idx = Math.floor(barIndex / barsPer) % prog.length;
+    const ch = prog[idx];
+    const secPerBeat = 60/currentBpm();
+    const barDur = secPerBeat*bpb*barsPer;
+    // only (re)trigger at the start of this chord's span
+    if(barIndex % barsPer === 0){
+      if(document.getElementById("bassOn").checked){ bassNote(time, freq(midi(ch[0],2)), barDur); }
+      if(document.getElementById("chordsOn").checked){ chordStab(time, triadFreqs(ch[0],ch[1],4), barDur); }
+      updateNowPlaying(idx);
+    }
+  }
+}
+
+function nextStep(){
+  const secPerBeat = 60/currentBpm();
+  nextNoteTime += secPerBeat/4;        // 16th-note resolution
+  step++;
+  if(step >= beatsPerBar()*4){ step=0; bar++; }
+}
+
+function scheduler(){
+  while(nextNoteTime < ac().currentTime + SCHEDULE_AHEAD){
+    scheduleStep(step, bar, nextNoteTime);
+    nextStep();
+  }
+  timerID = window.setTimeout(scheduler, LOOKAHEAD);
+}
+
+function startTransport(){
+  if(isPlaying) return;
+  ac(); masterGain();
+  isPlaying=true; step=0; bar=0; nextNoteTime=ac().currentTime + 0.06;
+  buildChordStrip();
+  scheduler();
+  const b=document.getElementById("playBtn"); b.textContent="Stop"; b.classList.remove("play"); b.classList.add("stop");
+}
+function stopTransport(){
+  isPlaying=false; if(timerID) clearTimeout(timerID); timerID=null;
+  stopAllVoices(); clearBeats();
+  const b=document.getElementById("playBtn"); b.textContent="Play"; b.classList.remove("stop"); b.classList.add("play");
+  document.getElementById("nowChord").textContent="—";
+  [...document.querySelectorAll("#chordStrip .c")].forEach(el=>el.classList.remove("current"));
+}
+
+/* ---- UI helpers ---- */
+function buildBeatLights(){
+  const host=document.getElementById("beatlights"); if(!host) return;
+  const n=beatsPerBar(); host.innerHTML="";
+  for(let i=0;i<n;i++){ const d=document.createElement("div"); d.className="b"+(i===0?" accent":""); host.appendChild(d); }
+}
+function flashBeat(beat, bpb){
+  const lights=document.querySelectorAll("#beatlights .b");
+  lights.forEach((l,i)=>l.classList.toggle("on", i===beat));
+}
+function clearBeats(){ document.querySelectorAll("#beatlights .b").forEach(l=>l.classList.remove("on")); }
+
+function buildChordStrip(){
+  const host=document.getElementById("chordStrip"); if(!host) return;
+  const prog=PROGS[document.getElementById("prog").value];
+  host.innerHTML="";
+  prog.forEach((ch,i)=>{ const d=document.createElement("div"); d.className="c"; d.dataset.i=i; d.textContent=chordLabel(ch); host.appendChild(d); });
+}
+function updateNowPlaying(idx){
+  const prog=PROGS[document.getElementById("prog").value];
+  document.getElementById("nowChord").textContent = chordLabel(prog[idx]);
+  [...document.querySelectorAll("#chordStrip .c")].forEach(el=>el.classList.toggle("current", parseInt(el.dataset.i,10)===idx));
+}
+
+/* ---- wire up transport controls ---- */
+document.getElementById("playBtn").addEventListener("click", ()=>{ isPlaying?stopTransport():startTransport(); });
+document.getElementById("bpm").addEventListener("input", e=>{ document.getElementById("bpmOut").textContent=e.target.value; });
+document.getElementById("beats").addEventListener("change", ()=>{ buildBeatLights(); });
+document.getElementById("prog").addEventListener("change", ()=>{ buildChordStrip(); });
+document.getElementById("grooveSel").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b) return; groove=b.dataset.g;
+  [...document.querySelectorAll("#grooveSel button")].forEach(x=>x.classList.toggle("active",x===b));
+});
+
+/* ============================================================
+   Ear trainer (independent of transport)
+   ============================================================ */
+const EAR_ROOTS=["C","D","E","F","G","A"];
+let earAnswer=null, earStreak=0, earCorrect=0, earTotal=0;
+
+function earQualities(){ return document.getElementById("earHard").checked ? ["major","minor","dim","aug"] : ["major","minor"]; }
+function playTriad(rootName, quality, arpeggiate){
+  const t0=ac().currentTime + 0.05;
+  const freqs=triadFreqs(rootName, quality, 4);
+  if(arpeggiate){ freqs.forEach((f,i)=> chordStab(t0 + i*0.18, [f], 0.32)); chordStab(t0 + freqs.length*0.18 + 0.05, freqs, 1.2); }
+  else { chordStab(t0, freqs, 1.4); }
+}
+function newEarQuestion(){
+  ac();
+  const qs=earQualities();
+  const root=EAR_ROOTS[Math.floor(Math.random()*EAR_ROOTS.length)];
+  const quality=qs[Math.floor(Math.random()*qs.length)];
+  earAnswer={root, quality};
+  renderEarChoices(qs);
+  document.getElementById("earPrompt").innerHTML="Listening… which quality is it?";
+  document.getElementById("earFb").textContent="\u00A0";
+  document.getElementById("earFb").className="fb";
+  playTriad(root, quality, document.getElementById("earArp").checked);
+}
+const QLABEL={major:"Major", minor:"Minor", dim:"Diminished", aug:"Augmented"};
+function renderEarChoices(qs){
+  const host=document.getElementById("earChoices"); host.style.display="flex"; host.innerHTML="";
+  qs.forEach(q=>{ const b=document.createElement("button"); b.textContent=QLABEL[q]; b.dataset.q=q; host.appendChild(b); });
+}
+document.getElementById("earChoices").addEventListener("click", e=>{
+  const b=e.target.closest("button"); if(!b || !earAnswer) return;
+  const guess=b.dataset.q; earTotal++;
+  const fb=document.getElementById("earFb");
+  if(guess===earAnswer.quality){ earCorrect++; earStreak++; fb.textContent="✓ Correct — "+earAnswer.root+" "+QLABEL[earAnswer.quality]; fb.className="fb good"; }
+  else { earStreak=0; fb.textContent="✗ It was "+earAnswer.root+" "+QLABEL[earAnswer.quality]+". Press Replay to hear it again."; fb.className="fb bad"; }
+  document.getElementById("earScore").textContent="Streak: "+earStreak+" \u00B7 Correct: "+earCorrect+" / "+earTotal;
+  document.getElementById("earPrompt").innerHTML="Press <b>Play a chord</b> for the next one.";
+});
+document.getElementById("earPlay").addEventListener("click", newEarQuestion);
+document.getElementById("earReplay").addEventListener("click", ()=>{ if(earAnswer) playTriad(earAnswer.root, earAnswer.quality, document.getElementById("earArp").checked); });
+
+/* init (no audio yet) */
+buildBeatLights();
+buildChordStrip();
+</script>
+</body>
+</html>
